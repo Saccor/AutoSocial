@@ -1,36 +1,36 @@
-# Social Media Automation Hub
+# AutoSocial - Social Media Automation Hub
 
-A Next.js application for managing and automating social media posts across multiple platforms with proper user authentication.
+A modern Next.js application for connecting and managing multiple social media accounts with a scalable provider-based architecture. Built with TypeScript, Supabase, and Tailwind CSS.
 
-## 🏗️ **Architecture Overview**
-
-This application uses a **provider-based architecture** that allows for easy scaling across multiple social media platforms:
-
-- **Authentication**: Supabase Auth with Google OAuth
-- **Provider System**: Unified interface for all social platforms
-- **Database**: Supabase with proper user relationships
-- **Security**: Row Level Security (RLS) and admin client for operations
-
-## 🚀 **Features**
+## 🚀 Features
 
 - ✅ **Secure Authentication** - Google OAuth via Supabase Auth
-- ✅ **User Management** - Proper user sessions and profile creation
-- ✅ **Twitter Integration** - Full OAuth 2.0 with PKCE
-- 🔄 **Instagram Integration** - Coming soon
-- 🔄 **LinkedIn Integration** - Coming soon
+- ✅ **Multi-Platform Support** - Connect Twitter, Instagram, LinkedIn, and more
+- ✅ **Provider Architecture** - Easy to add new social platforms
 - ✅ **Token Management** - Automatic refresh and validation
-- ✅ **Scalable Architecture** - Easy to add new platforms
+- ✅ **Modern UI** - Beautiful, responsive interface with Tailwind CSS
+- ✅ **Type Safety** - Full TypeScript implementation
+- 🔄 **Post Automation** - Coming soon
 
-## 📋 **Prerequisites**
+## 🛠️ Tech Stack
 
-- Node.js 18+ 
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **Authentication**: Supabase Auth
+- **Database**: Supabase (PostgreSQL)
+- **UI**: React 19
+
+## 📋 Prerequisites
+
+- Node.js 18+
 - A Supabase project
 - Google OAuth credentials (for user authentication)
-- Twitter Developer Account with OAuth 2.0 app
+- Social media developer accounts (Twitter, Instagram, etc.)
 
-## ⚙️ **Environment Setup**
+## ⚙️ Environment Setup
 
-Create a `.env.local` file with the following variables:
+Create a `.env.local` file in the root directory:
 
 ```env
 # Supabase Configuration
@@ -42,13 +42,21 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 NEXT_PUBLIC_TWITTER_CLIENT_ID=your_twitter_client_id
 TWITTER_CLIENT_SECRET=your_twitter_client_secret
 NEXT_PUBLIC_TWITTER_REDIRECT_URI=http://localhost:3000/api/oauth/callback/twitter
+
+# Instagram (Coming Soon)
+# NEXT_PUBLIC_INSTAGRAM_CLIENT_ID=your_instagram_client_id
+# INSTAGRAM_CLIENT_SECRET=your_instagram_client_secret
+
+# LinkedIn (Coming Soon)
+# NEXT_PUBLIC_LINKEDIN_CLIENT_ID=your_linkedin_client_id
+# LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
 ```
 
-## 🗄️ **Database Schema**
+## 🗄️ Database Setup
 
-The application requires these Supabase tables:
+### Required Tables
 
-### `users` table
+#### `users` table
 ```sql
 CREATE TABLE users (
   id UUID PRIMARY KEY REFERENCES auth.users(id),
@@ -58,12 +66,15 @@ CREATE TABLE users (
 );
 ```
 
-### `social_accounts` table
+#### `social_accounts` table
 ```sql
 CREATE TABLE social_accounts (
   id SERIAL PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   platform TEXT NOT NULL,
+  platform_user_id TEXT NOT NULL,
+  username TEXT NOT NULL,
+  display_name TEXT,
   account_identifier TEXT NOT NULL,
   access_token TEXT NOT NULL,
   refresh_token TEXT,
@@ -76,14 +87,15 @@ CREATE TABLE social_accounts (
 ```
 
 ### Row Level Security (RLS)
-Enable RLS on both tables and create policies:
+
+Enable RLS and create policies:
 
 ```sql
 -- Enable RLS
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE social_accounts ENABLE ROW LEVEL SECURITY;
 
--- Users can read/update their own profile
+-- Users can manage their own profile
 CREATE POLICY "Users can manage own profile" ON users
   USING (auth.uid() = id);
 
@@ -92,114 +104,135 @@ CREATE POLICY "Users can manage own social accounts" ON social_accounts
   USING (auth.uid() = user_id);
 ```
 
-## 🔐 **Authentication Setup**
+## 🚀 Installation & Setup
 
-### 1. Configure Supabase Auth
+1. **Clone the repository**
+   ```bash
+   git clone git@github.com:Saccor/AutoSocial.git
+   cd AutoSocial
+   ```
 
-In your Supabase dashboard:
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-1. Go to **Authentication > Providers**
-2. Enable **Google** provider
-3. Add your Google OAuth credentials
-4. Set redirect URL: `http://localhost:3000/auth/callback`
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your credentials
+   ```
 
-### 2. Configure Google OAuth
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create OAuth 2.0 credentials
-3. Add redirect URI: `http://localhost:3000/auth/callback`
-4. Copy Client ID and Secret to your `.env.local`
+5. **Open your browser**
+   Navigate to `http://localhost:3000`
 
-### 3. Configure Twitter OAuth
+## 📱 Usage
 
-1. Go to [Twitter Developer Portal](https://developer.twitter.com/)
-2. Create an OAuth 2.0 app
-3. Set redirect URI: `http://localhost:3000/api/oauth/callback/twitter`
-4. Copy credentials to your `.env.local`
+1. **Sign In**: Click "Sign In" and authenticate with Google
+2. **Connect Accounts**: Click on social media platforms to connect your accounts
+3. **Manage Connections**: View and manage your connected social media accounts
+4. **Post Content**: (Coming soon) Create and schedule posts across platforms
 
-## 🚀 **Installation & Running**
+## 🏗️ Architecture
 
-```bash
-# Install dependencies
-npm install
+The application uses a **provider-based architecture** that makes adding new social media platforms simple:
 
-# Run development server
-npm run dev
-```
+### Core Components
 
-Navigate to `http://localhost:3000`
+- **`SocialProvider` Interface**: Defines the contract for all social platforms
+- **`ProviderRegistry`**: Manages and configures all available providers
+- **`SocialAccountService`**: Handles database operations and token management
+- **Individual Providers**: Platform-specific implementations (Twitter, Instagram, etc.)
 
-## 📱 **Usage Flow**
-
-1. **Sign In** - Users sign in with Google via Supabase Auth
-2. **Connect Accounts** - Users can connect their social media accounts
-3. **Manage Connections** - View and manage connected accounts
-4. **Automated Posts** - (Future feature) Schedule and automate posts
-
-## 🔧 **Adding New Platforms**
-
-To add a new social media platform:
-
-1. Create a new provider in `src/providers/` implementing `SocialProvider`
-2. Register it in `ProviderRegistry.ts`
-3. Add platform-specific environment variables
-4. Update the `SupportedPlatform` type in `src/types/social.ts`
-
-Example structure:
-```typescript
-export class InstagramProvider implements SocialProvider {
-  public readonly name = 'instagram';
-  
-  async generateAuthUrl(): Promise<string> { /* ... */ }
-  async authenticate(params: AuthParams): Promise<AuthTokenDetails> { /* ... */ }
-  async refreshToken(token: string): Promise<AuthTokenDetails> { /* ... */ }
-  async post(token: string, info: MessageInformation): Promise<PostDetails> { /* ... */ }
-  async validateToken(token: string): Promise<boolean> { /* ... */ }
-}
-```
-
-## 🛡️ **Security Features**
-
-- **OAuth 2.0 with PKCE** for secure authentication
-- **Row Level Security** in Supabase
-- **Encrypted token storage** in database
-- **Automatic token refresh** before expiration
-- **Admin client** for server-side operations bypassing RLS
-
-## 📚 **Project Structure**
+### Project Structure
 
 ```
 src/
-├── app/                    # Next.js app router
-├── components/            # React components
-├── lib/                   # Authentication and utilities
-├── providers/             # Social media provider implementations
-├── services/              # Database services
-└── types/                 # TypeScript type definitions
+├── app/                          # Next.js App Router
+│   ├── api/oauth/callback/       # OAuth callback handlers
+│   ├── auth/callback/            # Supabase auth callback
+│   ├── page.tsx                  # Main dashboard
+│   └── layout.tsx                # App layout
+├── components/                   # React components
+│   ├── AuthButton.tsx            # Authentication component
+│   └── SocialConnectButton.tsx   # Social platform connect button
+├── lib/                          # Utilities and configurations
+│   ├── auth.ts                   # Client-side auth
+│   └── auth-server.ts            # Server-side auth
+├── providers/                    # Social media providers
+│   ├── ProviderRegistry.ts       # Provider management
+│   ├── TwitterProvider.ts        # Twitter implementation
+│   └── InstagramProvider.ts      # Instagram implementation
+├── services/                     # Business logic
+│   └── SocialAccountService.ts   # Account management
+└── types/                        # TypeScript definitions
+    └── social.ts                 # Social media types
 ```
 
-## 🎯 **Next Steps**
+## 🔧 Adding New Platforms
 
-- [ ] Implement Instagram OAuth integration
-- [ ] Implement LinkedIn OAuth integration
-- [ ] Add post scheduling functionality
+To add a new social media platform:
+
+1. **Create a provider** implementing the `SocialProvider` interface
+2. **Register it** in `ProviderRegistry.ts`
+3. **Add environment variables** for OAuth credentials
+4. **Update types** in `src/types/social.ts`
+5. **Create callback route** in `src/app/api/oauth/callback/[platform]/`
+
+See `ARCHITECTURE.md` for detailed instructions.
+
+## 🛡️ Security Features
+
+- **OAuth 2.0 with PKCE** for secure authentication
+- **Row Level Security** in Supabase database
+- **Automatic token refresh** before expiration
+- **Server-side secret management**
+- **CSRF protection** with state parameters
+
+## 📦 Available Scripts
+
+```bash
+npm run dev        # Start development server
+npm run build      # Build for production
+npm run start      # Start production server
+npm run lint       # Run ESLint
+```
+
+## 🎯 Roadmap
+
+- [ ] Complete Instagram OAuth integration
+- [ ] Complete LinkedIn OAuth integration
+- [ ] Add TikTok and Facebook support
+- [ ] Implement post scheduling
 - [ ] Add bulk posting features
-- [ ] Add analytics and reporting
-- [ ] Add post templates
+- [ ] Analytics and reporting dashboard
+- [ ] Post templates and AI assistance
 
-## 🐛 **Troubleshooting**
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **"User not authenticated" error**: Make sure you're signed in with Google first
-2. **Database constraint errors**: Ensure your database schema matches the requirements
-3. **OAuth redirect errors**: Check your redirect URIs match exactly in all platforms
-4. **Token refresh failures**: Verify your client secrets are correct
+- **OAuth redirect errors**: Ensure redirect URIs match exactly in all platforms
+- **Database errors**: Verify your Supabase schema matches the requirements
+- **Authentication issues**: Check your Google OAuth setup in Supabase
+- **Environment variables**: Make sure all required variables are set
 
-### Logs
+### Getting Help
 
-Check the browser console and server logs for detailed error messages. All OAuth flows include comprehensive logging.
+1. Check the browser console for errors
+2. Verify your environment variables
+3. Ensure your database schema is correct
+4. Check OAuth app configurations
 
-## 📄 **License**
+## 📄 License
 
-MIT License - feel free to use this for your own projects!
+This project is private and proprietary.
+
+## 🤝 Contributing
+
+This is a private project. For any questions or contributions, please contact the maintainer.

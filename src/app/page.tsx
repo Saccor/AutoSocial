@@ -3,6 +3,7 @@ import SocialConnectButton from "@/components/SocialConnectButton";
 import AuthButton from '@/components/AuthButton'
 import { getCurrentUser } from '@/lib/auth-server'
 import { SocialAccountService, StoredSocialAccount } from '@/services/SocialAccountService'
+import Dashboard from '@/components/Dashboard'
 
 export default async function Home({
   searchParams,
@@ -51,53 +52,13 @@ export default async function Home({
 
         {user ? (
           <>
-            {/* Connected Accounts Section */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Connected Accounts
-              </h2>
-              
-              {userAccounts.length > 0 ? (
-                <div className="grid gap-4 mb-6">
-                  {userAccounts.map((account) => (
-                    <div
-                      key={account.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-blue-600 font-semibold text-sm">
-                            {account.platform.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900">
-                            {account.platform.charAt(0).toUpperCase() + account.platform.slice(1)}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Account: {account.account_identifier}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                          Connected
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 mb-6">
-                  No social media accounts connected yet.
-                </p>
-              )}
-            </div>
+            {/* Main Dashboard */}
+            <Dashboard userAccounts={userAccounts} />
 
             {/* Connect New Accounts Section */}
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white rounded-lg shadow-md p-6 mt-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Connect Social Media Accounts
+                Connect Additional Accounts
               </h2>
               
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
