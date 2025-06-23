@@ -3,7 +3,7 @@ import SocialConnectButton from "@/components/SocialConnectButton";
 import AuthButton from '@/components/AuthButton'
 import { getCurrentUser } from '@/lib/auth-server'
 import { SocialAccountService, StoredSocialAccount } from '@/services/SocialAccountService'
-import Dashboard from '@/components/Dashboard'
+import TrendingDashboard from '@/components/TrendingDashboard'
 
 export default async function Home({
   searchParams,
@@ -52,8 +52,8 @@ export default async function Home({
 
         {user ? (
           <>
-            {/* Main Dashboard */}
-            <Dashboard userAccounts={userAccounts} />
+            {/* Trending Analytics Dashboard */}
+            <TrendingDashboard />
 
             {/* Connect New Accounts Section */}
             <div className="bg-white rounded-lg shadow-md p-6 mt-8">
