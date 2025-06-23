@@ -33,7 +33,16 @@ export interface TrendAnalysis {
     avg_likes: number;
     avg_shares: number;
     avg_comments: number;
+    total_likes: number;
+    total_shares: number;
+    total_comments: number;
+    total_engagement: number;
     peak_hours: number[];
+    ai_viral_factors?: string[];
+    ai_content_themes?: string[];
+    ai_sentiment?: string;
+    ai_engagement_prediction?: string;
+    ai_insights?: string[];
   };
   content_themes: string[];
   media_types: ('image' | 'video' | 'text')[];
@@ -43,9 +52,17 @@ export interface TrendAnalysis {
     neutral: number;
   };
   viral_score: number;
+  total_posts: number;
   sample_posts: TrendingPost[];
   created_at: Date;
   updated_at: Date;
+  ai_analysis?: {
+    insights: string[];
+    viral_factors: string[];
+    content_themes: string[];
+    sentiment: string;
+    engagement_prediction: string;
+  };
 }
 
 export interface ContentSuggestion {
@@ -59,6 +76,10 @@ export interface ContentSuggestion {
   optimal_posting_time: Date;
   confidence_score: number;
   created_at: Date;
+  ai_insights?: {
+    viralPotential?: string;
+    targetAudience?: string;
+  };
 }
 
 export interface TrendingHashtag {
@@ -95,4 +116,10 @@ export interface TrendDashboardData {
     postCount: number;
   }[];
   viralityScore: number;
+  trendingCategories?: {
+    category: string;
+    count: number;
+    totalEngagement: number;
+    avgEngagement: number;
+  }[];
 } 
